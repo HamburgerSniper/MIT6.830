@@ -5,6 +5,7 @@ import simpledb.util.IteratorWrapper;
 import java.io.Serializable;
 import java.util.Iterator;
 
+//测试
 /**
  * Tuple maintains information about the contents of a tuple. Tuples have a
  * specified schema specified by a TupleDesc object and contain Field objects
