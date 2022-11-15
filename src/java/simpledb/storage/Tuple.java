@@ -1,21 +1,26 @@
 package simpledb.storage;
 
-import simpledb.util.IteratorWrapper;
-
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Tuple maintains information about the contents of a tuple. Tuples have a
  * specified schema specified by a TupleDesc object and contain Field objects
  * with the data for each field.
+ *
+ * id(int)  name(string)  sex(string)
+ *  1           xxx         m
+ *  2           yyy         f
+ *  那么(1, xxx, m)就是一个Tuple，然后TupleDesc是(id(int) name(string) sex(string))。
  */
 public class Tuple implements Serializable {
-    private TupleDesc         tupleDesc;
-    private Field[]           fields;
-    private RecordId          recordId;
 
     private static final long serialVersionUID = 1L;
+    private TupleDesc         tupleDesc;
+    private RecordId          recordId;
+    private List<Field>       fieldList;
 
     /**
      * Create a new tuple with the specified schema (type).
@@ -27,7 +32,7 @@ public class Tuple implements Serializable {
     public Tuple(TupleDesc td) {
         // some code goes here
         this.tupleDesc = td;
-        this.fields = new Field[this.tupleDesc.numFields()];
+        fieldList = new ArrayList<>(td.numFields());
     }
 
     /**
@@ -68,9 +73,9 @@ public class Tuple implements Serializable {
      */
     public void setField(int i, Field f) {
         // some code goes here
-        if (i > this.tupleDesc.numFields())
-            return;
-        this.fields[i] = f;
+        if (i >= fieldList.size())
+            fieldList.add(i,f);
+        else fieldList.set(i,f);
     }
 
     /**
@@ -81,22 +86,25 @@ public class Tuple implements Serializable {
      */
     public Field getField(int i) {
         // some code goes here
-        if (i > this.tupleDesc.numFields())
+        if (i < 0 || i >= fieldList.size())
             return null;
-        return this.fields[i];
+        return fieldList.get(i);
     }
 
     /**
      * Returns the contents of this Tuple as a string. Note that to pass the
      * system tests, the format needs to be as follows:
-     *
+     * <p>
      * column1\tcolumn2\tcolumn3\t...\tcolumnN
-     *
+     * <p>
      * where \t is any whitespace (except a newline)
      */
+    @Override
     public String toString() {
-        // some code goes here
-        throw new UnsupportedOperationException("Implement this");
+        return "Tuple{" +
+                "tupleDesc=" + tupleDesc +
+                ", fieldList=" + fieldList +
+                '}';
     }
 
     /**
@@ -106,7 +114,7 @@ public class Tuple implements Serializable {
     public Iterator<Field> fields()
     {
         // some code goes here
-        return new IteratorWrapper<>(this.fields);
+        return fieldList.iterator();
     }
 
     /**

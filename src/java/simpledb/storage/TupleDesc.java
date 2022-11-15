@@ -13,7 +13,6 @@ public class TupleDesc implements Serializable {
     //--> 代替tdItems，使用List动态数组方便对数组内容进行操作
     private List<TDItem> descList = new ArrayList<>();
     //--> numFields
-    private int fieldNum;
 
 //    private TDItem[] tdItems;
 
@@ -107,7 +106,6 @@ public class TupleDesc implements Serializable {
             throw new IllegalArgumentException("The typeAr length must be equal to fieldAr length");
         }
         this.descList = new ArrayList<>(typeAr.length);
-        this.fieldNum = typeAr.length;
 
         for (int i = 0; i < typeAr.length; i++) {
             final TDItem item = new TDItem(typeAr[i],fieldAr[i]);
@@ -125,7 +123,9 @@ public class TupleDesc implements Serializable {
      */
     public TupleDesc(Type[] typeAr){
         // some code goes here
-        this(typeAr,new String[typeAr.length]);
+        for (int i = 0; i < typeAr.length; i++) {
+            descList.add(new TDItem(typeAr[i],null));
+        }
     }
 
     /**
@@ -135,7 +135,6 @@ public class TupleDesc implements Serializable {
     public TupleDesc(final List<TDItem> itemList) {
         // some code goes here
         this.descList = new ArrayList<>(itemList);
-        this.fieldNum = this.descList.size();
     }
 
 
@@ -145,7 +144,7 @@ public class TupleDesc implements Serializable {
     //返回TDItem数组的大小
     public int numFields() {
         // some code goes here
-        return this.fieldNum;
+        return descList.size();
     }
 
     /**
@@ -159,7 +158,7 @@ public class TupleDesc implements Serializable {
      */
     public String getFieldName(int i) throws NoSuchElementException {
         // some code goes here
-        if (i >= this.fieldNum || i < 0){
+        if (i >= descList.size() || i < 0){
             throw new NoSuchElementException();
         }
         return this.descList.get(i).fieldName;
@@ -177,7 +176,7 @@ public class TupleDesc implements Serializable {
      */
     public Type getFieldType(int i) throws NoSuchElementException {
         // some code goes here
-        if (i >= this.fieldNum){
+        if (i < 0 || i >= descList.size()){
             throw new NoSuchElementException();
         }
         return this.descList.get(i).fieldType;
@@ -196,7 +195,7 @@ public class TupleDesc implements Serializable {
         // some code goes here
         if (name == null)
             throw new NoSuchElementException();
-        for (int i = 0; i < this.fieldNum; i++) {
+        for (int i = 0; i < descList.size(); i++) {
             if (name.equals(this.descList.get(i).fieldName)){
                 return i;
             }
@@ -211,8 +210,8 @@ public class TupleDesc implements Serializable {
     public int getSize() {
         // some code goes here
         int size = 0;
-        for (int i = 0; i < this.fieldNum; i++) {
-            size += this.descList.get(0).fieldType.getLen();
+        for (int i = 0; i < descList.size(); i++) {
+            size += this.descList.get(i).fieldType.getLen();
         }
         return size;
     }
@@ -286,7 +285,6 @@ public class TupleDesc implements Serializable {
         //some code goes here
         return "TupleDesc{" +
                 "descList=" + descList +
-                ", fieldNum=" + fieldNum +
                 '}';
     }
 }
